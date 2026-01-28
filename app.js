@@ -31,8 +31,8 @@ const JUDETE = [
 ];
 
 const GENRES = [
-  "Muzică ușoară", "Muzică populară", "Muzică de petrecere", 
-  "Muzică lăutărească", "DJ", "Orchestra", "Violonist", "Manele"
+  "Muzică ușoară", "Muzică populară", "Formație", 
+  "Saxofonist", "DJ", "Orchestra", "Violonist", "Manele"
 ];
 
 // ============= LOGGING SETUP =============
