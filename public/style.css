@@ -208,9 +208,10 @@ body {
     max-width: 1200px;
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     gap: var(--spacing-3xl);
     align-items: center;
+    justify-items: center;
 }
 
 .landing-left {
@@ -240,6 +241,7 @@ body {
     gap: var(--spacing-xl);
     max-width: 550px;
     margin: 0 auto;
+    align-items: flex-start;
 }
 
 .landing-actions {

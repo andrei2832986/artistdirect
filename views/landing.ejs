@@ -252,17 +252,18 @@
 
         .benefit-item {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 1rem;
-            padding: 1rem;
+            padding: 1.25rem 1.5rem;
             background: var(--color-gray-50);
             border-radius: var(--radius-md);
             margin-bottom: 1rem;
         }
-
+        
         .benefit-icon {
             font-size: 2rem;
             flex-shrink: 0;
+            line-height: 1;
         }
 
         .cta-section {
@@ -451,6 +452,32 @@
     <%- include('footer') %>
 
     <script>
+        // Custom PWA install prompt after 10 seconds
+        let deferredPrompt = null;
+        let installPromptShown = false;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show our own prompt after 10 seconds on the landing page
+            if (!installPromptShown) {
+                installPromptShown = true;
+                setTimeout(async () => {
+                    if (!deferredPrompt) return;
+                    try {
+                        const { outcome } = await deferredPrompt.prompt();
+                        // outcome is 'accepted' or 'dismissed'
+                        deferredPrompt = null;
+                    } catch (err) {
+                        console.error('Install prompt failed:', err);
+                        deferredPrompt = null;
+                    }
+                }, 10000);
+            }
+        });
+
         // Register service worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
