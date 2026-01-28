@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2C3E50">
     <meta name="description" content="ArtistDirect - Platformă gratuită pentru conectarea directă cu artiști muzicali. Fără comisioane, fără intermediari.">
     <title>ArtistDirect - Descoperă artiști, fără intermediari</title>
     <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="manifest" href="/static/manifest.webmanifest">
     <link rel="stylesheet" href="/static/style.css">
     <style>
         @keyframes fadeInUp {
@@ -126,7 +128,8 @@
         }
 
         .stats-section {
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+            /* Slightly more blue, using existing palette */
+            background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 55%, var(--color-accent) 100%);
             background-size: 200% 200%;
             animation: statsGradientShift 14s ease-in-out infinite;
             color: white;
@@ -196,26 +199,44 @@
             animation-delay: 0.3s;
         }
 
+        @keyframes sectionFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         .section-hidden {
             opacity: 0;
             transform: translateY(40px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
         
         .section-visible {
-            opacity: 1;
-            transform: translateY(0);
+            animation: sectionFadeUp 0.65s ease-out forwards;
         }
         
         .feature-card-hidden {
             opacity: 0;
             transform: translateY(30px) scale(0.95);
-            transition: all 0.6s ease-out;
         }
         
         .feature-card-visible {
-            opacity: 1;
-            transform: translateY(0) scale(1);
+            animation: cardFadeUp 0.6s ease-out forwards;
         }
         
         .benefit-item-hidden {
@@ -317,7 +338,7 @@
                 <h2 style="font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); text-align: center; margin-bottom: 3rem; color: var(--color-text);">
                     De ce ArtistDirect?
                 </h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <div class="landing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
                     <div class="feature-card feature-card-hidden" data-delay="0">
                         <div class="benefit-icon">💰</div>
                         <div>
@@ -370,7 +391,7 @@
                 <h2 style="font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); text-align: center; margin-bottom: 3rem; color: var(--color-text);">
                     Pentru artiști
                 </h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <div class="landing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
                     <div class="feature-card feature-card-hidden" data-delay="0">
                         <div class="feature-icon">🎯</div>
                         <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--color-text);">Profil complet gratuit</h3>
@@ -430,6 +451,15 @@
     <%- include('footer') %>
 
     <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.error('Service worker registration failed:', err);
+                });
+            });
+        }
+
         // Intersection Observer for scroll animations
         const observerOptions = {
             threshold: 0.1,

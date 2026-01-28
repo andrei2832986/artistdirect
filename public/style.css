@@ -196,6 +196,14 @@ body {
     padding: var(--spacing-3xl) var(--spacing-md);
 }
 
+/* Make landing sections consistent and centered */
+.landing-hero + .stats-section,
+.landing-hero + .stats-section + .section,
+.landing-hero + .stats-section + .section + .section,
+.landing-hero + .stats-section + .section + .section + .cta-section {
+    width: 100%;
+}
+
 .landing-wrapper {
     max-width: 1200px;
     width: 100%;
@@ -256,6 +264,13 @@ body {
 
 .landing-description p:last-child {
     margin-bottom: 0;
+}
+
+/* Shared grid for landing cards (De ce ArtistDirect? & Pentru artiști) */
+.landing-grid {
+    width: 100%;
+    justify-items: center;
+    align-items: stretch;
 }
 
 .landing-actions .btn {
@@ -362,7 +377,7 @@ body {
     border-radius: var(--radius-lg);
     overflow: hidden;
     border: 1px solid var(--color-gray-border);
-    transition: all 0.4s ease;
+    transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.3s ease;
     display: flex;
     flex-direction: column;
 }

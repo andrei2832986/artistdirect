@@ -617,11 +617,21 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.json({ limit: '10mb' }));
 
 // Static files with caching
-app.use('/static', express.static('public', {
+app.use('/static', express.static(path.join(__dirname, 'public'), {
     maxAge: process.env.NODE_ENV === 'production' ? '1y' : '0',
     etag: true,
-    lastModified: true
+    lastModified: true,
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('manifest.webmanifest')) {
+            res.setHeader('Content-Type', 'application/manifest+json');
+        }
+    }
 }));
+
+// Service worker (must be served from the origin)
+app.get('/sw.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'sw.js'));
+});
 
 // Serve favicon at standard paths
 app.get('/favicon.ico', (req, res) => {
