@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Uploads
+public/uploads/*
+!public/uploads/keep.txt
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build files
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Database
+*.sql
+!database_migration.sql
+
+# Other
+.cod1929873789382337827836232.txt
+
+
+

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= profileUser.name %> - ArtistDirect</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="navbar">
+            <div class="navbar-content">
+                <a href="/explore" class="btn btn-secondary" style="text-decoration: none;">← Înapoi</a>
+                <a href="/" class="navbar-brand">
+                    <img src="/static/logo.png" alt="ArtistDirect">
+                </a>
+                <div class="navbar-actions">
+                    <% if (currentUser) { %>
+                        <% if (currentUser.id === profileUser.id) { %>
+                            <span class="user-info">Profilul tău</span>
+                        <% } %>
+                        <a href="/logout" class="btn btn-danger">Logout</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        <% if (typeof messages !== 'undefined' && messages) { %>
+            <% const successMessages = messages.success || []; %>
+            <% const errorMessages = messages.error || []; %>
+            <% if (successMessages.length > 0 || errorMessages.length > 0) { %>
+                <div id="flash-messages" style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 1000; max-width: 500px; width: 90%;">
+                    <% successMessages.forEach(function(message) { %>
+                        <div class="flash-message flash-success">
+                            <%= message %>
+                            <button onclick="this.parentElement.remove()">×</button>
+                        </div>
+                    <% }); %>
+                    <% errorMessages.forEach(function(message) { %>
+                        <div class="flash-message flash-error">
+                            <%= message %>
+                            <button onclick="this.parentElement.remove()">×</button>
+                        </div>
+                    <% }); %>
+                </div>
+                <script>
+                    // Auto-hide flash messages after 5 seconds
+                    setTimeout(() => {
+                        const flashMessages = document.getElementById('flash-messages');
+                        if (flashMessages) {
+                            flashMessages.style.animation = 'slideUp 0.3s ease-out';
+                            setTimeout(() => flashMessages.remove(), 300);
+                        }
+                    }, 5000);
+                </script>
+            <% } %>
+        <% } %>
+
+        <div class="profile-page">
+            <!-- Profile Hero Section -->
+            <div class="profile-hero">
+                <img src="<%= profileUser.profile_pic ? getImageUrl(profileUser.profile_pic) : 'https://cdn-icons-png.flaticon.com/512/149/149071.png' %>" 
+                     alt="<%= profileUser.name %>" 
+                     class="profile-hero-image"
+                     loading="eager"
+                     onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png';"
+                     crossorigin="anonymous">
+            </div>
+
+            <div class="container">
+                <!-- Name, Genre, Rating and Description below image -->
+                <div style="text-align: center; margin: 2rem 0 3rem 0;">
+                    <h1 style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; margin-bottom: 0.5rem; color: var(--color-black);">
+                        <%= profileUser.name %>
+                    </h1>
+                    <% if (profileUser.genres && profileUser.genres.length > 0) { %>
+                        <p style="font-size: clamp(1rem, 2vw, 1.25rem); color: var(--color-gray-600); font-weight: 500; margin-bottom: 0.5rem;">
+                            <%= profileUser.genres[0] %>
+                        </p>
+                    <% } else { %>
+                        <p style="font-size: clamp(1rem, 2vw, 1.25rem); color: var(--color-gray-600); font-weight: 500; margin-bottom: 0.5rem;">
+                            Artist Muzical
+                        </p>
+                    <% } %>
+                    
+                    <!-- Rating Display -->
+                    <% if (profileUser.avg_rating && profileUser.avg_rating >= 3) { %>
+                        <div class="rating-display" style="margin: 1rem 0;">
+                            <div class="stars-rating" data-rating="<%= profileUser.avg_rating %>">
+                                <% for (let i = 1; i <= 5; i++) { %>
+                                    <span class="star <%= i <= Math.round(profileUser.avg_rating) ? 'filled' : '' %>">★</span>
+                                <% } %>
+                            </div>
+                            <p style="font-size: 0.875rem; color: var(--color-gray-600); margin-top: 0.5rem;">
+                                <%= profileUser.avg_rating.toFixed(1) %> (<%= profileUser.rating_count || 0 %> evaluări)
+                            </p>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <!-- Description Section -->
+                <div class="section" id="description-section">
+                    <h2 class="section-title">Despre</h2>
+                    <% if (profileUser.description) { %>
+                        <p style="color: var(--color-gray-700); line-height: 1.8; white-space: pre-wrap;"><%= profileUser.description %></p>
+                    <% } else { %>
+                        <p style="color: var(--color-gray-500); font-style: italic;">Nicio descriere adăugată încă.</p>
+                    <% } %>
+                    
+                    <!-- Edit Description (Owner Only) -->
+                    <% if (currentUser && currentUser.id === profileUser.id) { %>
+                        <div class="edit-section" style="margin-top: 1.5rem;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 1rem; font-weight: 600;">Editează Descrierea</h3>
+                            <form action="/update-description#description-section" method="POST" id="updateDescriptionForm">
+                                <textarea name="description" class="form-input" rows="5" placeholder="Scrie o descriere despre tine..."><%= profileUser.description || '' %></textarea>
+                                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" id="updateDescriptionBtn">
+                                    <span class="btn-text">Salvează Descrierea</span>
+                                    <span class="btn-spinner" style="display: none;">⏳</span>
+                                </button>
+                            </form>
+                        </div>
+                    <% } %>
+                </div>
+                
+                
+                <!-- Change Profile Picture (Owner Only) -->
+                <% if (currentUser && currentUser.id === profileUser.id) { %>
+                    <div class="edit-section" id="profile-pic-section">
+                        <h3 class="section-title" style="font-size: 1.125rem; margin-bottom: 1rem;">Schimbă Poza de Profil</h3>
+                        <form action="/upload-profile-pic#profile-pic-section" method="POST" enctype="multipart/form-data" id="uploadProfilePicForm">
+                            <div class="file-input-wrapper">
+                                <label for="profile_pic_input" class="file-input-label">Alege Poza</label>
+                                <input type="file" id="profile_pic_input" name="profile_pic" accept="image/*" class="file-input" required onchange="previewProfilePic(this)">
+                                <div id="profilePicName" class="file-input-name"></div>
+                                <div id="profilePicPreview" class="photo-preview" style="display: none; margin-top: 1rem;">
+                                    <img id="profilePicPreviewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 50%; border: 2px solid var(--color-primary); object-fit: cover;">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;" id="uploadProfilePicBtn">
+                                <span class="btn-text">Actualizează Poza</span>
+                                <span class="btn-spinner" style="display: none;">⏳</span>
+                            </button>
+                        </form>
+                    </div>
+                <% } %>
+
+                <!-- Music Genre Section -->
+                <div class="section" id="genres-section">
+                    <h2 class="section-title">Gen Muzical</h2>
+                    <div class="counties-list">
+                        <% if (profileUser.genres && profileUser.genres.length > 0) { %>
+                            <% profileUser.genres.forEach(genre => { %>
+                                <span class="county-badge"><%= genre %></span>
+                            <% }) %>
+                        <% } else { %>
+                            <p style="color: var(--color-gray-500);">Neselectat</p>
+                        <% } %>
+                    </div>
+                    
+                    <!-- Edit Genres (Owner Only) -->
+                    <% if (currentUser && currentUser.id === profileUser.id) { %>
+                        <div class="edit-section" style="margin-top: 1.5rem;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 1rem; font-weight: 600;">Editează Genurile Muzicale</h3>
+                            <form action="/update-preferences#genres-section" method="POST" id="updateGenresForm">
+                                <input type="hidden" name="regions" value="">
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label class="form-label" style="margin-bottom: 0.75rem; display: block;">Genuri Muzicale:</label>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                        <% const allGenres = ["Muzică ușoară", "Muzică populară", "Muzică de petrecere", "Muzică lăutărească", "DJ", "Orchestra", "Violonist", "Manele"]; %>
+                                        <% allGenres.forEach(genre => { %>
+                                            <label style="display: flex; align-items: center; gap: 0.5rem; background: var(--color-gray-50); padding: 0.5rem 0.75rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem;">
+                                                <input type="checkbox" name="genres" value="<%= genre %>"
+                                                    <%= (profileUser.genres && profileUser.genres.includes(genre)) ? 'checked' : '' %>>
+                                                <%= genre %>
+                                            </label>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="updateGenresBtn">
+                                    <span class="btn-text">Salvează Genuri</span>
+                                    <span class="btn-spinner" style="display: none;">⏳</span>
+                                </button>
+                            </form>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Gallery Section -->
+                <div class="section" id="gallery-section">
+                    <h2 class="section-title">Galerie</h2>
+                    <% if (profileUser.photos && profileUser.photos.length > 0) { %>
+                        <div class="gallery-carousel" id="galleryCarousel">
+                            <div class="gallery-container" id="galleryContainer">
+                                <% profileUser.photos.forEach(function(photoName, index) { %>
+                                    <div class="gallery-item">
+                                        <img src="<%= getImageUrl(photoName) %>" 
+                                             alt="Photo <%= index + 1 %>" 
+                                             loading="eager"
+                                             decoding="async"
+                                             onerror="handleImageError(this, '<%= photoName %>')"
+                                             crossorigin="anonymous">
+                                        <% if (currentUser && currentUser.id === profileUser.id) { %>
+                                            <form action="/delete-photo" method="POST" style="position: absolute; top: 10px; right: 10px; z-index: 20;" onsubmit="return confirm('Ești sigur că vrei să ștergi fotografia?')">
+                                                <input type="hidden" name="filename" value="<%= photoName %>">
+                                                <button type="submit" class="delete-btn">×</button>
+                                            </form>
+                                        <% } %>
+                                    </div>
+                                <% }); %>
+                            </div>
+                            <% if (profileUser.photos.length > 1) { %>
+                                <button class="gallery-nav prev" id="galleryPrev" onclick="moveGallery(-1)">‹</button>
+                                <button class="gallery-nav next" id="galleryNext" onclick="moveGallery(1)">›</button>
+                            <% } %>
+                        </div>
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <button class="btn btn-primary gallery-fullscreen-btn" onclick="openFullscreenGallery()" style="padding: 0.5rem 1rem; font-size: 0.875rem; white-space: nowrap;">
+                                Vezi galeria
+                            </button>
+                        </div>
+                        
+                        <!-- Fullscreen Gallery Modal (Vertical Scroll Slideshow) -->
+                        <div id="fullscreenGallery" class="fullscreen-gallery" style="display: none;">
+                            <div class="fullscreen-gallery-header">
+                                <button class="fullscreen-gallery-close" onclick="closeFullscreenGallery()" aria-label="Închide">×</button>
+                            </div>
+                            <div class="fullscreen-gallery-container" id="fullscreenGalleryContainer">
+                                <% profileUser.photos.forEach(function(photoName, index) { %>
+                                    <div class="fullscreen-gallery-item">
+                                        <img src="<%= getImageUrl(photoName) %>" 
+                                             alt="Photo <%= index + 1 %>" 
+                                             loading="eager"
+                                             decoding="async"
+                                             onerror="handleImageError(this, '<%= photoName %>')">
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📷</div>
+                            <p>Nicio fotografie încă.</p>
+                        </div>
+                    <% } %>
+
+                    <!-- Upload Photo (Owner Only) -->
+                    <% if (currentUser && currentUser.id === profileUser.id) { %>
+                        <div class="edit-section" style="margin-top: 1.5rem;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 1rem; font-weight: 600;">Adaugă Fotografie</h3>
+                            <% const photoCount = profileUser.photos ? profileUser.photos.length : 0; %>
+                            <% if (photoCount >= 10) { %>
+                                <p style="color: var(--color-gray-600); margin-bottom: 1rem;">Ai atins limita de 10 poze. Șterge unele poze înainte de a adăuga altele.</p>
+                            <% } else { %>
+                                <p style="color: var(--color-gray-600); margin-bottom: 1rem; font-size: 0.875rem;">Poze: <%= photoCount %> / 10</p>
+                                <form action="/upload-photo#gallery-section" method="POST" enctype="multipart/form-data" id="uploadPhotoForm">
+                                    <div class="file-input-wrapper">
+                                        <label for="photo_input" class="file-input-label">Alege Fotografie</label>
+                                        <input type="file" id="photo_input" name="photo" accept="image/*" class="file-input" required onchange="previewPhoto(this)">
+                                        <div id="photoName" class="file-input-name"></div>
+                                        <div id="photoPreview" class="photo-preview" style="display: none; margin-top: 1rem;">
+                                            <img id="photoPreviewImg" src="" alt="Preview" style="max-width: 100%; max-height: 300px; border-radius: var(--radius-md); border: 1px solid var(--color-gray-border);">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="uploadPhotoBtn">
+                                        <span class="btn-text">Încarcă Fotografie</span>
+                                        <span class="btn-spinner" style="display: none;">⏳</span>
+                                    </button>
+                                </form>
+                            <% } %>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- YouTube Videos Section -->
+                <div class="section" id="youtube-section">
+                    <h2 class="section-title">Videoclipuri</h2>
+                    <% if (profileUser.youtube_videos && profileUser.youtube_videos.length > 0) { %>
+                        <div class="youtube-grid">
+                            <% profileUser.youtube_videos.forEach(function(youtubeUrl) { %>
+                                <% 
+                                    // Ensure URL has proper parameters
+                                    const separator = youtubeUrl.includes('?') ? '&' : '?';
+                                    const embedUrl = youtubeUrl + separator + 'enablejsapi=1&rel=0&modestbranding=1';
+                                %>
+                                <div class="youtube-item">
+                                    <iframe 
+                                        src="<%= embedUrl %>" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                        allowfullscreen
+                                        loading="lazy"
+                                        referrerpolicy="no-referrer-when-downgrade"
+                                        title="YouTube video player">
+                                    </iframe>
+                                    <% if (currentUser && currentUser.id === profileUser.id) { %>
+                                        <form action="/delete-youtube-video" method="POST" style="position: absolute; top: 10px; right: 10px; z-index: 20;" onsubmit="return confirm('Ești sigur că vrei să ștergi videoclipul YouTube?')">
+                                            <input type="hidden" name="youtube_url" value="<%= youtubeUrl %>">
+                                            <button type="submit" class="delete-btn">×</button>
+                                        </form>
+                                    <% } %>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📺</div>
+                            <p>Niciun videoclip YouTube încă.</p>
+                        </div>
+                    <% } %>
+
+                    <!-- Add YouTube Video (Owner Only) -->
+                    <% if (currentUser && currentUser.id === profileUser.id) { %>
+                        <div class="edit-section" style="margin-top: 1.5rem;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 1rem; font-weight: 600;">Adaugă Videoclip YouTube</h3>
+                            <% const youtubeCount = profileUser.youtube_videos ? profileUser.youtube_videos.length : 0; %>
+                            <% if (youtubeCount >= 5) { %>
+                                <p style="color: var(--color-gray-600); margin-bottom: 1rem;">Ai atins limita de 5 videouri YouTube. Șterge un videoclip înainte de a adăuga altul.</p>
+                            <% } else { %>
+                                <p style="color: var(--color-gray-600); margin-bottom: 1rem; font-size: 0.875rem;">Videouri YouTube: <%= youtubeCount %> / 5</p>
+                                <form action="/add-youtube-video#youtube-section" method="POST" id="addYoutubeForm">
+                                    <div class="youtube-input-group">
+                                        <label class="youtube-input-label" for="youtube_url">Link YouTube</label>
+                                        <input 
+                                            type="text" 
+                                            id="youtube_url" 
+                                            name="youtube_url" 
+                                            class="youtube-input" 
+                                            placeholder="https://www.youtube.com/watch?v=..." 
+                                            required>
+                                        <p style="font-size: 0.75rem; color: var(--color-gray-500); margin-top: 0.5rem;">
+                                            Lipește link-ul complet de pe YouTube (ex: https://www.youtube.com/watch?v=...)
+                                        </p>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="addYoutubeVideoBtn">
+                                        <span class="btn-text">Adaugă Videoclip YouTube</span>
+                                        <span class="btn-spinner" style="display: none;">⏳</span>
+                                    </button>
+                                </form>
+                            <% } %>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Counties Section -->
+                <div class="section" id="regions-section">
+                    <h2 class="section-title">Județe</h2>
+                    <div class="counties-section">
+                        <% if (profileUser.regions && profileUser.regions.length > 0) { %>
+                            <div class="counties-list">
+                                <% profileUser.regions.forEach(region => { %>
+                                    <span class="county-badge"><%= region %></span>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <p style="color: var(--color-gray-500);">Niciun județ selectat.</p>
+                        <% } %>
+                    </div>
+
+                    <!-- Edit Counties (Owner Only) -->
+                    <% if (currentUser && currentUser.id === profileUser.id) { %>
+                        <div class="edit-section" style="margin-top: 1.5rem;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 1rem; font-weight: 600;">Editează Județele</h3>
+                            <form action="/update-preferences#regions-section" method="POST" id="updateRegionsForm">
+                                <input type="hidden" name="genres" value="">
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label class="form-label" style="margin-bottom: 0.75rem; display: block;">Județe:</label>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; max-height: 200px; overflow-y: auto; border: 1px solid var(--color-gray-200); padding: 1rem; border-radius: var(--radius-sm); background: var(--color-white);">
+                                        <% const allJudete = ["Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vâlcea", "Vaslui", "Vrancea"]; %>
+                                        <% allJudete.forEach(judet => { %>
+                                            <label style="display: flex; align-items: center; gap: 0.5rem; background: var(--color-gray-50); padding: 0.5rem 0.75rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem;">
+                                                <input type="checkbox" name="regions" value="<%= judet %>" 
+                                                    <%= (profileUser.regions && profileUser.regions.includes(judet)) ? 'checked' : '' %>>
+                                                <%= judet %>
+                                            </label>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="updateRegionsBtn">
+                                    <span class="btn-text">Salvează Județe</span>
+                                    <span class="btn-spinner" style="display: none;">⏳</span>
+                                </button>
+                            </form>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Social Media Section -->
+                <div class="section" id="social-section">
+                    <h2 class="section-title">Contactează-mă</h2>
+                    
+                    <!-- Connect Social Media (Owner Only) -->
+                    <% if (currentUser && currentUser.id === profileUser.id) { %>
+                        <div class="connect-social-section">
+                            <h3 class="connect-social-title">Conectează Conturile Tale</h3>
+                            <form action="/update-social-media#social-section" method="POST" id="updateSocialForm">
+                                <div class="social-input-group">
+                                    <label class="social-input-label">WhatsApp (număr cu cod țară, ex: +40712345678)</label>
+                                    <input type="text" name="whatsapp" class="social-input" 
+                                           value="<%= profileUser.whatsapp || '' %>" 
+                                           placeholder="+40712345678">
+                                </div>
+                                <div class="social-input-group">
+                                    <label class="social-input-label">Facebook (URL complet)</label>
+                                    <input type="url" name="facebook" class="social-input" 
+                                           value="<%= profileUser.facebook || '' %>" 
+                                           placeholder="https://facebook.com/username">
+                                </div>
+                                <div class="social-input-group">
+                                    <label class="social-input-label">Instagram (username fără @)</label>
+                                    <input type="text" name="instagram" class="social-input" 
+                                           value="<%= profileUser.instagram || '' %>" 
+                                           placeholder="username">
+                                </div>
+                                <div class="social-input-group">
+                                    <label class="social-input-label">TikTok (username fără @)</label>
+                                    <input type="text" name="tiktok" class="social-input" 
+                                           value="<%= profileUser.tiktok || '' %>" 
+                                           placeholder="username">
+                                </div>
+                                <div class="social-input-group">
+                                    <label class="social-input-label">Gmail (adresă email completă)</label>
+                                    <input type="email" name="gmail" class="social-input" 
+                                           value="<%= profileUser.gmail || '' %>" 
+                                           placeholder="example@gmail.com">
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="updateSocialMediaBtn">
+                                    <span class="btn-text">Salvează Contactele</span>
+                                    <span class="btn-spinner" style="display: none;">⏳</span>
+                                </button>
+                            </form>
+                        </div>
+                    <% } %>
+
+                    <!-- Display Social Media Buttons -->
+                    <div class="social-media-section">
+                        <% if (profileUser.whatsapp) { %>
+                            <a href="https://wa.me/<%= profileUser.whatsapp.replace(/[^0-9+]/g, '') %>" target="_blank" class="social-btn social-btn-whatsapp">
+                                <img src="/static/social-logos/whatsapp_1384055.png" alt="WhatsApp" class="social-icon">
+                                <span>WhatsApp</span>
+                            </a>
+                        <% } %>
+                        <% if (profileUser.facebook) { %>
+                            <a href="<%= profileUser.facebook %>" target="_blank" class="social-btn social-btn-facebook">
+                                <img src="/static/social-logos/facebook_10483626.png" alt="Facebook" class="social-icon">
+                                <span>Facebook</span>
+                            </a>
+                        <% } %>
+                        <% if (profileUser.instagram && profileUser.instagram.trim() !== '') { %>
+                            <a href="https://instagram.com/<%= profileUser.instagram.replace('@', '').trim() %>" target="_blank" class="social-btn social-btn-instagram">
+                                <img src="/static/social-logos/instagram_3621435.png" alt="Instagram" class="social-icon">
+                                <span>Instagram</span>
+                            </a>
+                        <% } %>
+                        <% if (profileUser.tiktok) { %>
+                            <a href="https://tiktok.com/@<%= profileUser.tiktok.replace('@', '') %>" target="_blank" class="social-btn social-btn-tiktok">
+                                <img src="/static/social-logos/tiktok_3621450.png" alt="TikTok" class="social-icon">
+                                <span>TikTok</span>
+                            </a>
+                        <% } %>
+                        <% if (profileUser.gmail) { %>
+                            <a href="mailto:<%= profileUser.gmail %>" class="social-btn social-btn-gmail">
+                                <span class="social-icon" style="font-size: 1.25rem; font-weight: bold;">✉</span>
+                                <span>Gmail</span>
+                            </a>
+                        <% } %>
+                        <% if (!profileUser.whatsapp && !profileUser.facebook && !profileUser.instagram && !profileUser.tiktok && !profileUser.gmail) { %>
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📱</div>
+                                <p>Nu sunt conectate conturi de social media.</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Services Section -->
+                <div class="section" id="services-section">
+                    <h2 class="section-title">Servicii</h2>
+                    <% if (profileUser.services && profileUser.services.length > 0) { %>
+                        <div class="services-grid">
+                            <% profileUser.services.forEach(function(service) { %>
+                                <% 
+                                    const serviceTitle = typeof service === 'string' ? service : service.title;
+                                    const serviceDetails = typeof service === 'string' ? null : (service.details || null);
+                                %>
+                                <div class="service-card">
+                                    <div class="service-content">
+                                        <span class="service-name"><%= serviceTitle %></span>
+                                        <% if (serviceDetails) { %>
+                                            <p class="service-details"><%= serviceDetails %></p>
+                                        <% } %>
+                                    </div>
+                                    <% if (currentUser && currentUser.id === profileUser.id) { %>
+                                        <form action="/delete-service" method="POST" style="display: inline;" onsubmit="return confirm('Ești sigur că vrei să ștergi acest serviciu?')">
+                                            <input type="hidden" name="service_title" value="<%= serviceTitle %>">
+                                            <button type="submit" class="service-delete-btn">×</button>
+                                        </form>
+                                    <% } %>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🎵</div>
+                            <p>Niciun serviciu adăugat încă.</p>
+                        </div>
+                    <% } %>
+
+                    <!-- Add Service (Owner Only) -->
+                    <% if (currentUser && currentUser.id === profileUser.id) { %>
+                        <div class="edit-section" style="margin-top: 1.5rem;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 1rem; font-weight: 600;">Adaugă Serviciu</h3>
+                            <form action="/add-service#services-section" method="POST" id="addServiceForm">
+                                <div class="form-group">
+                                    <label class="form-label" for="service_title">Titlu Serviciu *</label>
+                                    <input type="text" id="service_title" name="service_title" class="form-input" 
+                                           placeholder="ex: Formație întreagă, Solist, DJ, etc." required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="service_details">Detalii (opțional)</label>
+                                    <textarea id="service_details" name="service_details" class="form-input" rows="3" 
+                                              placeholder="Adaugă detalii despre acest serviciu..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width: 100%;" id="addServiceBtn">
+                                    <span class="btn-text">Adaugă Serviciu</span>
+                                    <span class="btn-spinner" style="display: none;">⏳</span>
+                                </button>
+                            </form>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Reviews Section (Moved to bottom) -->
+                <% if (reviews && reviews.length > 0) { %>
+                    <div class="section" id="reviews-section">
+                        <h2 class="section-title">Recenzii (<%= reviews.length %>)</h2>
+                        <div class="reviews-list">
+                            <% reviews.forEach(function(review) { %>
+                                <div class="review-item" style="padding: 1rem; margin-bottom: 1rem; background: var(--color-gray-50); border-radius: var(--radius-md); border: 1px solid var(--color-gray-200);">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                        <div>
+                                            <div class="stars-rating" style="display: inline-block; margin-bottom: 0.25rem;">
+                                                <% for (let i = 1; i <= 5; i++) { %>
+                                                    <span class="star <%= i <= review.rating ? 'filled' : '' %>" style="font-size: 0.875rem;">★</span>
+                                                <% } %>
+                                            </div>
+                                            <% if (review.reviewer_name) { %>
+                                                <p style="font-weight: 600; font-size: 0.875rem; color: var(--color-black); margin: 0.25rem 0 0 0;">
+                                                    <%= review.reviewer_name %>
+                                                </p>
+                                            <% } else { %>
+                                                <p style="font-weight: 600; font-size: 0.875rem; color: var(--color-gray-600); margin: 0.25rem 0 0 0;">
+                                                    Utilizator anonim
+                                                </p>
+                                            <% } %>
+                                        </div>
+                                        <p style="font-size: 0.75rem; color: var(--color-gray-500); margin: 0;">
+                                            <%= new Date(review.created_at).toLocaleDateString('ro-RO') %>
+                                        </p>
+                                    </div>
+                                    <% if (review.review_text && review.review_text.trim() !== '') { %>
+                                        <p style="color: var(--color-gray-700); line-height: 1.6; margin: 0; white-space: pre-wrap;"><%= review.review_text %></p>
+                                    <% } %>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% } %>
+
+                <!-- Rating/Review Form Section (Everyone can leave a review) -->
+                <% 
+                    // Show form if: not logged in, OR logged in as different user (not profile owner)
+                    let showRatingForm = true;
+                    try {
+                        if (currentUser && currentUser.id && profileUser && profileUser.id) {
+                            // Check if current user is viewing their own profile
+                            const currentUserId = parseInt(currentUser.id);
+                            const profileUserId = parseInt(profileUser.id);
+                            if (currentUserId === profileUserId) {
+                                showRatingForm = false;
+                            }
+                        }
+                    } catch(e) {
+                        // If there's any error, default to showing the form
+                        showRatingForm = true;
+                    }
+                %>
+                <% if (showRatingForm) { %>
+                    <div class="section" id="rating-section">
+                        <h2 class="section-title">Lăsă o evaluare</h2>
+                        <form action="/submit-rating" method="POST" id="ratingForm" style="background: var(--color-gray-50); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--color-gray-200);">
+                            <input type="hidden" name="artist_id" value="<%= profileUser.id %>">
+                            
+                            <!-- Name field (required for non-logged-in users) -->
+                            <% if (!currentUser) { %>
+                                <div class="form-group" style="margin-bottom: 1rem;">
+                                    <label class="form-label" for="reviewer_name">Nume *</label>
+                                    <input type="text" id="reviewer_name" name="reviewer_name" class="form-input" 
+                                           placeholder="Introdu numele tău" required maxlength="100">
+                                </div>
+                            <% } %>
+                            
+                            <!-- Rating Stars -->
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label">Evaluare *</label>
+                                <div id="starsContainer" style="display: flex; gap: 0.5rem; justify-content: center; margin: 1rem 0;">
+                                    <% for (let i = 1; i <= 5; i++) { %>
+                                        <label class="star-label" style="font-size: 2rem; color: var(--color-gray-300); cursor: pointer; transition: color 0.2s;">
+                                            <input type="radio" name="rating" value="<%= i %>" required style="display: none;">
+                                            ★
+                                        </label>
+                                    <% } %>
+                                </div>
+                                <p id="ratingText" style="text-align: center; color: var(--color-gray-600); font-size: 0.875rem; margin-top: 0.5rem;"></p>
+                            </div>
+                            
+                            <!-- Review Text -->
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="review_text">Recenzie (opțional)</label>
+                                <textarea id="review_text" name="review_text" class="form-input" rows="4" 
+                                          placeholder="Scrie o recenzie despre acest artist..." maxlength="1000"></textarea>
+                                <p style="font-size: 0.75rem; color: var(--color-gray-500); margin-top: 0.25rem;">
+                                    Maximum 1000 de caractere
+                                </p>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;" id="submitRatingBtn">
+                                <span class="btn-text">Trimite Evaluarea</span>
+                                <span class="btn-spinner" style="display: none;">⏳</span>
+                            </button>
+                        </form>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Photo preview functionality
+        function previewPhoto(input) {
+            const preview = document.getElementById('photoPreview');
+            const previewImg = document.getElementById('photoPreviewImg');
+            const nameElement = document.getElementById('photoName');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                    nameElement.textContent = 'Fișier selectat: ' + input.files[0].name;
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+                nameElement.textContent = '';
+            }
+        }
+        
+        function previewProfilePic(input) {
+            const preview = document.getElementById('profilePicPreview');
+            const previewImg = document.getElementById('profilePicPreviewImg');
+            const nameElement = document.getElementById('profilePicName');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                    nameElement.textContent = 'Fișier selectat: ' + input.files[0].name;
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+                nameElement.textContent = '';
+            }
+        }
+        
+        // File input name display (for other file inputs)
+        function updateFileName(input, nameElementId) {
+            const nameElement = document.getElementById(nameElementId);
+            if (input.files && input.files[0]) {
+                nameElement.textContent = 'Fișier selectat: ' + input.files[0].name;
+            } else {
+                nameElement.textContent = '';
+            }
+        }
+        
+        // Save scroll position before form submission and restore after page load
+        (function() {
+            // Save scroll position before form submission
+            const forms = document.querySelectorAll('form[action]');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    const formId = form.id || form.getAttribute('action');
+                    const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+                    sessionStorage.setItem('scrollPosition', scrollPosition);
+                    sessionStorage.setItem('scrollTarget', formId);
+                });
+            });
+            
+            // Restore scroll position after page load
+            window.addEventListener('load', function() {
+                const savedPosition = sessionStorage.getItem('scrollPosition');
+                const scrollTarget = sessionStorage.getItem('scrollTarget');
+                
+                if (savedPosition) {
+                    // Check if URL has a hash (anchor)
+                    if (window.location.hash) {
+                        // Wait a bit for page to render, then scroll to hash
+                        setTimeout(function() {
+                            const targetElement = document.querySelector(window.location.hash);
+                            if (targetElement) {
+                                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            } else {
+                                window.scrollTo(0, parseInt(savedPosition));
+                            }
+                            sessionStorage.removeItem('scrollPosition');
+                            sessionStorage.removeItem('scrollTarget');
+                        }, 100);
+                    } else {
+                        // No hash, restore saved position
+                        setTimeout(function() {
+                            window.scrollTo(0, parseInt(savedPosition));
+                            sessionStorage.removeItem('scrollPosition');
+                            sessionStorage.removeItem('scrollTarget');
+                        }, 100);
+                    }
+                }
+            });
+        })();
+
+        // Loading Spinners for Forms
+        function setupFormSpinner(formId, buttonId) {
+            const form = document.getElementById(formId);
+            const button = document.getElementById(buttonId);
+            if (form && button) {
+                form.addEventListener('submit', function() {
+                    const btnText = button.querySelector('.btn-text');
+                    const btnSpinner = button.querySelector('.btn-spinner');
+                    if (btnText && btnSpinner) {
+                        btnText.style.display = 'none';
+                        btnSpinner.style.display = 'inline';
+                        button.disabled = true;
+                    }
+                });
+            }
+        }
+
+        // Setup spinners for all forms
+        setupFormSpinner('ratingForm', 'submitRatingBtn');
+        setupFormSpinner('uploadPhotoForm', 'uploadPhotoBtn');
+        setupFormSpinner('uploadProfilePicForm', 'uploadProfilePicBtn');
+        setupFormSpinner('updateDescriptionForm', 'updateDescriptionBtn');
+        setupFormSpinner('updateGenresForm', 'updateGenresBtn');
+        setupFormSpinner('updateRegionsForm', 'updateRegionsBtn');
+        setupFormSpinner('updateSocialMediaForm', 'updateSocialMediaBtn');
+        setupFormSpinner('addServiceForm', 'addServiceBtn');
+        setupFormSpinner('addYoutubeVideoForm', 'addYoutubeVideoBtn');
+
+        // Image Error Handler
+        function handleImageError(img, filename) {
+            console.error('Image failed to load:', img.src, 'Filename:', filename);
+            // Try alternative path without uploads/ prefix
+            if (img.src.includes('uploads/')) {
+                const altPath = img.src.replace('/uploads/', '/');
+                console.log('Trying alternative path:', altPath);
+                img.src = altPath;
+            } else if (!img.src.includes('cdn-icons-png.flaticon.com')) {
+                // Fallback to default avatar
+                img.src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+            }
+            // Prevent infinite loop
+            img.onerror = null;
+        }
+
+        // Gallery Carousel Functionality
+        let currentGalleryIndex = 0;
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const totalItems = galleryItems.length;
+
+        function updateGallery() {
+            const container = document.getElementById('galleryContainer');
+            if (container) {
+                container.style.transform = `translateX(-${currentGalleryIndex * 100}%)`;
+            }
+            
+            // Force load the current image if it hasn't loaded yet
+            const currentItem = galleryItems[currentGalleryIndex];
+            if (currentItem) {
+                const img = currentItem.querySelector('img');
+                if (img && !img.complete) {
+                    // Force image to load by setting src again or using load()
+                    const originalSrc = img.src;
+                    img.src = '';
+                    img.src = originalSrc;
+                }
+            }
+            
+            // Preload adjacent images
+            const prevIndex = currentGalleryIndex > 0 ? currentGalleryIndex - 1 : totalItems - 1;
+            const nextIndex = currentGalleryIndex < totalItems - 1 ? currentGalleryIndex + 1 : 0;
+            
+            [prevIndex, nextIndex].forEach(index => {
+                const item = galleryItems[index];
+                if (item) {
+                    const img = item.querySelector('img');
+                    if (img && !img.complete && !img.src) {
+                        // Create a link element to preload
+                        const link = document.createElement('link');
+                        link.rel = 'preload';
+                        link.as = 'image';
+                        link.href = img.dataset.src || img.getAttribute('data-src') || img.src;
+                        document.head.appendChild(link);
+                    }
+                }
+            });
+            
+            // Update nav buttons
+            const prevBtn = document.getElementById('galleryPrev');
+            const nextBtn = document.getElementById('galleryNext');
+            if (prevBtn) prevBtn.disabled = false; // Don't disable since we're cycling
+            if (nextBtn) nextBtn.disabled = false; // Don't disable since we're cycling
+        }
+
+        function moveGallery(direction) {
+            currentGalleryIndex += direction;
+            // Make it cycle: last -> first, first -> last
+            if (currentGalleryIndex < 0) currentGalleryIndex = totalItems - 1;
+            if (currentGalleryIndex >= totalItems) currentGalleryIndex = 0;
+            updateGallery();
+        }
+
+        // Gallery indicators removed per user request
+
+        // Initialize gallery
+        if (totalItems > 0) {
+            updateGallery();
+        }
+
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const carousel = document.getElementById('galleryCarousel');
+        
+        if (carousel && totalItems > 1) {
+            carousel.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            carousel.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                if (touchEndX < touchStartX - 50) {
+                    moveGallery(1); // Swipe left - next
+                }
+                if (touchEndX > touchStartX + 50) {
+                    moveGallery(-1); // Swipe right - prev
+                }
+            }
+        }
+        
+        // Fullscreen Gallery (Vertical Scroll Slideshow)
+        function openFullscreenGallery() {
+            const modal = document.getElementById('fullscreenGallery');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                // Scroll to top when opening
+                modal.scrollTop = 0;
+            }
+        }
+
+        function closeFullscreenGallery() {
+            const modal = document.getElementById('fullscreenGallery');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+        }
+
+        // Close fullscreen gallery on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('fullscreenGallery');
+                if (modal && modal.style.display === 'flex') {
+                    closeFullscreenGallery();
+                }
+            }
+        });
+        
+        // Rating System Interactive
+        const starsContainer = document.getElementById('starsContainer');
+        const ratingText = document.getElementById('ratingText');
+        const ratingInputs = document.querySelectorAll('input[name="rating"]');
+        
+        if (starsContainer && ratingText) {
+            const starLabels = starsContainer.querySelectorAll('.star-label');
+            
+            starLabels.forEach((label, index) => {
+                label.addEventListener('mouseenter', () => {
+                    const rating = index + 1;
+                    highlightStars(rating);
+                    updateRatingText(rating);
+                });
+            });
+            
+            starsContainer.addEventListener('mouseleave', () => {
+                const checkedInput = starsContainer.querySelector('input[type="radio"]:checked');
+                if (checkedInput) {
+                    highlightStars(parseInt(checkedInput.value));
+                    updateRatingText(parseInt(checkedInput.value));
+                } else {
+                    clearStars();
+                    ratingText.textContent = '';
+                }
+            });
+            
+            ratingInputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    highlightStars(parseInt(input.value));
+                    updateRatingText(parseInt(input.value));
+                });
+            });
+            
+            function highlightStars(rating) {
+                starLabels.forEach((label, index) => {
+                    if (index < rating) {
+                        label.style.color = '#FFD700';
+                    } else {
+                        label.style.color = 'var(--color-gray-300)';
+                    }
+                });
+            }
+            
+            function clearStars() {
+                starLabels.forEach(label => {
+                    label.style.color = 'var(--color-gray-300)';
+                });
+            }
+            
+            function updateRatingText(rating) {
+                const texts = {
+                    1: 'Foarte slab',
+                    2: 'Slab',
+                    3: 'Acceptabil',
+                    4: 'Bun',
+                    5: 'Excelent'
+                };
+                ratingText.textContent = texts[rating] || '';
+            }
+        }
+    </script>
+    
+    <%- include('footer') %>
+</body>
+</html>

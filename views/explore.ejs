@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorează - ArtistDirect</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="navbar">
+            <div class="navbar-content">
+                <a href="/" class="navbar-brand">
+                    <img src="/static/logo.png" alt="ArtistDirect">
+                </a>
+                <div class="navbar-actions">
+                    <% if (currentUser) { %>
+                        <div class="user-info">
+                            Bun venit, <strong><%= currentUser.name %></strong>
+                        </div>
+                        <a href="/logout" class="btn btn-danger">Logout</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="explore-header">
+                <h1>Explorează Artiștii</h1>
+                <p>Descoperă și conectează-te cu artiști muzicali</p>
+            </div>
+
+            <div class="filters-card">
+                <form action="/explore" method="GET" class="filters-form">
+                    <div class="filter-group">
+                        <label class="form-label" for="search">Caută artiști</label>
+                        <input type="text" 
+                               name="search" 
+                               id="search" 
+                               class="form-input" 
+                               placeholder="Caută după nume sau username..."
+                               value="<%= searchQuery || '' %>">
+                    </div>
+
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label class="form-label" for="region">Județ</label>
+                            <select name="region" id="region" class="form-input">
+                                <option value="">Toate județele</option>
+                                <% allJudete.forEach(judet => { %>
+                                    <option value="<%= judet %>" <%= selectedRegion === judet ? 'selected' : '' %>>
+                                        <%= judet %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="form-label" for="genre">Gen Muzical</label>
+                            <select name="genre" id="genre" class="form-input">
+                                <option value="">Toate genurile</option>
+                                <% allGenres.forEach(genre => { %>
+                                    <option value="<%= genre %>" <%= selectedGenre === genre ? 'selected' : '' %>>
+                                        <%= genre %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn-primary">Filtrează</button>
+                        <a href="/explore" class="btn btn-secondary">Reset</a>
+                    </div>
+                </form>
+            </div>
+
+            <% 
+                // Ensure hasMore is always defined
+                if (typeof hasMore === 'undefined') {
+                    hasMore = false;
+                }
+                if (typeof totalUsers === 'undefined') {
+                    totalUsers = users ? users.length : 0;
+                }
+                if (typeof currentPage === 'undefined') {
+                    currentPage = 1;
+                }
+            %>
+            <% if (users && users.length > 0) { %>
+                <div class="artists-grid">
+                    <% users.forEach(user => { 
+                        const isCurrentUser = currentUser && currentUser.id === user.id;
+                    %>
+                        <div class="artist-card <%= isCurrentUser ? 'artist-card-self' : '' %>">
+                            <div class="artist-card-image-wrapper">
+                                <% 
+                                    let imageUrl = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                                    if (user.profile_pic) {
+                                        try {
+                                            if (typeof getImageUrl === 'function') {
+                                                const generatedUrl = getImageUrl(user.profile_pic);
+                                                imageUrl = generatedUrl || imageUrl;
+                                            } else if (user.profile_pic.startsWith('http')) {
+                                                imageUrl = user.profile_pic;
+                                            } else {
+                                                // Try to construct Supabase URL manually
+                                                const filename = user.profile_pic.replace('uploads/', '');
+                                                imageUrl = `/static/uploads/${filename}`;
+                                            }
+                                        } catch (e) {
+                                            console.error('Error generating image URL:', e);
+                                            imageUrl = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                                        }
+                                    }
+                                %>
+                                <img src="<%= imageUrl %>" 
+                                     alt="<%= user.name %>" 
+                                     class="artist-card-image"
+                                     loading="lazy"
+                                     decoding="async"
+                                     onerror="handleExploreImageError(this, '<%= user.profile_pic || '' %>')"
+                                     crossorigin="anonymous">
+                            </div>
+                            <div class="artist-card-content">
+                                <h3 class="artist-card-name"><%= user.name %></h3>
+                                
+                                <% if (isCurrentUser) { %>
+                                    <div class="artist-card-self-label">Profilul tău</div>
+                                <% } %>
+
+                                <% if (user.genres && user.genres.length > 0) { %>
+                                    <div class="artist-card-genres">
+                                        <% user.genres.forEach((genre, index) => { %>
+                                            <span class="genre-tag"><%= genre %></span>
+                                        <% }); %>
+                                    </div>
+                                <% } else { %>
+                                    <p class="artist-card-genre">Artist Muzical</p>
+                                <% } %>
+                                <a href="/profiles/<%= user.username %>" class="btn btn-primary artist-card-btn">
+                                    Vezi Profilul
+                                </a>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+                
+                <% if (hasMore) { %>
+                    <div class="show-more-container" style="text-align: center; margin: var(--spacing-2xl) 0;">
+                        <form action="/explore" method="GET" style="display: inline;">
+                            <% if (searchQuery) { %>
+                                <input type="hidden" name="search" value="<%= searchQuery %>">
+                            <% } %>
+                            <% if (selectedRegion) { %>
+                                <input type="hidden" name="region" value="<%= selectedRegion %>">
+                            <% } %>
+                            <% if (selectedGenre) { %>
+                                <input type="hidden" name="genre" value="<%= selectedGenre %>">
+                            <% } %>
+                            <input type="hidden" name="page" value="<%= currentPage + 1 %>">
+                            <button type="submit" class="btn btn-primary" style="min-width: 200px;">
+                                Arată mai multe (<%= users.length %> din <%= totalUsers %>)
+                            </button>
+                        </form>
+                    </div>
+                <% } %>
+            <% } else { %>
+                <div class="empty-state">
+                    <div class="empty-state-icon">👥</div>
+                    <p>Nu s-au găsit artiști.</p>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">Fii primul care creează un profil!</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+    
+    <%- include('footer') %>
+    
+    <script>
+        // Image Error Handler for Explore Page
+        function handleExploreImageError(img, filename) {
+            console.error('Image failed to load on explore page:', img.src, 'Filename:', filename);
+            // Try alternative path without uploads/ prefix
+            if (img.src.includes('uploads/')) {
+                const altPath = img.src.replace('/uploads/', '/');
+                console.log('Trying alternative path:', altPath);
+                img.src = altPath;
+            } else if (!img.src.includes('cdn-icons-png.flaticon.com')) {
+                // Fallback to default avatar
+                img.src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+            }
+            // Prevent infinite loop
+            img.onerror = null;
+        }
+        
+        // Lazy load images when they come into view
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.classList.add('loaded');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+    </script>
+</body>
+</html>

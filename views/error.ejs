@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Eroare' %> - ArtistDirect</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="navbar">
+            <div class="navbar-content">
+                <a href="/" class="navbar-brand">
+                    <img src="/static/logo.png" alt="ArtistDirect">
+                </a>
+                <div class="navbar-actions">
+                    <% if (currentUser) { %>
+                        <div class="user-info">
+                            Bun venit, <strong><%= currentUser.name %></strong>
+                        </div>
+                        <a href="/logout" class="btn btn-danger">Logout</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="empty-state" style="padding: var(--spacing-4xl) 0;">
+                <div class="empty-state-icon" style="font-size: 4rem;">⚠️</div>
+                <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: var(--spacing-md); color: var(--color-text);">
+                    <%= error || 'Eroare' %>
+                </h1>
+                <% if (message) { %>
+                    <p style="font-size: 1.125rem; color: var(--color-text-light); margin-bottom: var(--spacing-xl); max-width: 600px; margin-left: auto; margin-right: auto;">
+                        <%= message %>
+                    </p>
+                <% } %>
+                <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap;">
+                    <a href="/" class="btn btn-primary">Înapoi la pagină principală</a>
+                    <a href="/explore" class="btn btn-secondary">Explorează</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('footer') %>
+</body>
+</html>

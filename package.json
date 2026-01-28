@@ -1,0 +1,47 @@
+{
+  "name": "artistdirect",
+  "version": "1.0.0",
+  "description": "Platformă pentru conectarea directă cu artiști muzicali",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [
+    "artists",
+    "music",
+    "events",
+    "weddings"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "compression": "^1.7.4",
+    "connect-pg-simple": "^10.0.0",
+    "csurf": "^1.11.0",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "express-flash": "^0.0.2",
+    "express-rate-limit": "^7.1.5",
+    "express-session": "^1.18.2",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "multer": "^2.0.2",
+    "node-cache": "^5.1.2",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.16.3",
+    "sharp": "^0.33.2",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "type": "commonjs"
+}

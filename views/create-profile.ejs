@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creează Profilul - ArtistDirect</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="navbar">
+            <div class="navbar-content">
+                <a href="/" class="navbar-brand">
+                    <img src="/static/logo.png" alt="ArtistDirect">
+                </a>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="form-container">
+                <div class="text-center mb-4" style="margin-bottom: 2rem;">
+                    <h1>Creează Profilul Tău</h1>
+                    <p style="margin-top: 1rem; color: var(--color-gray-600);">
+                        Bun venit, <strong><%= googleName %></strong>!
+                    </p>
+                    <p style="font-size: 0.875rem; color: var(--color-gray-500); margin-top: 0.5rem;">
+                        <%= googleEmail %>
+                    </p>
+                </div>
+                
+                <% if (errors && errors.length > 0) { %>
+                    <div style="background: #fee; border: 1px solid #fcc; border-radius: var(--radius-md); padding: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                        <strong style="color: #c00;">Erori de validare:</strong>
+                        <ul style="margin: var(--spacing-sm) 0 0 var(--spacing-lg); padding: 0;">
+                            <% errors.forEach(error => { %>
+                                <li style="color: #c00; margin-bottom: var(--spacing-xs);"><%= error.msg || error %></li>
+                            <% }) %>
+                        </ul>
+                    </div>
+                <% } %>
+                
+                <form action="/create-profile" method="POST">
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username</label>
+                        <input 
+                            type="text" 
+                            id="username"
+                            name="username" 
+                            class="form-input <%= errors && errors.some(e => e.path === 'username') ? 'error' : '' %>" 
+                            placeholder="alege-un-username" 
+                            value="<%= oldInput && oldInput.username ? oldInput.username : '' %>"
+                            required
+                        >
+                        <% if (errors && errors.some(e => e.path === 'username')) { %>
+                            <span style="color: #c00; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                                <%= errors.find(e => e.path === 'username').msg %>
+                            </span>
+                        <% } %>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="name">Numele Tău</label>
+                        <input 
+                            type="text" 
+                            id="name"
+                            name="name" 
+                            class="form-input <%= errors && errors.some(e => e.path === 'name') ? 'error' : '' %>"
+                            value="<%= oldInput && oldInput.name ? oldInput.name : '' %>" 
+                            placeholder="Numele complet" 
+                            required
+                        >
+                        <% if (errors && errors.some(e => e.path === 'name')) { %>
+                            <span style="color: #c00; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                                <%= errors.find(e => e.path === 'name').msg %>
+                            </span>
+                        <% } %>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="city">Oraș</label>
+                        <input 
+                            type="text" 
+                            id="city"
+                            name="city" 
+                            class="form-input <%= errors && errors.some(e => e.path === 'city') ? 'error' : '' %>" 
+                            placeholder="Orașul tău (opțional)" 
+                            value="<%= oldInput && oldInput.city ? oldInput.city : '' %>"
+                        >
+                        <% if (errors && errors.some(e => e.path === 'city')) { %>
+                            <span style="color: #c00; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                                <%= errors.find(e => e.path === 'city').msg %>
+                            </span>
+                        <% } %>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">
+                        Creează Profilul
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('footer') %>
+</body>
+</html>
