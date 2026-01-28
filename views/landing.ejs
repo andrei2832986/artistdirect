@@ -51,16 +51,16 @@
                 transform: translateY(0px);
             }
             50% {
-                transform: translateY(-20px);
+                transform: translateY(-10px);
             }
         }
-
+        
         @keyframes pulse {
             0%, 100% {
                 transform: scale(1);
             }
             50% {
-                transform: scale(1.05);
+                transform: scale(1.03);
             }
         }
 
@@ -127,9 +127,36 @@
 
         .stats-section {
             background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+            background-size: 200% 200%;
+            animation: statsGradientShift 14s ease-in-out infinite;
             color: white;
             padding: 4rem 2rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-section.section-hidden {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .stats-section.section-visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+
+        @keyframes statsGradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .stat-number {
@@ -171,35 +198,35 @@
 
         .section-hidden {
             opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease-out;
+            transform: translateY(40px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
-
+        
         .section-visible {
             opacity: 1;
             transform: translateY(0);
         }
-
+        
         .feature-card-hidden {
             opacity: 0;
             transform: translateY(30px) scale(0.95);
             transition: all 0.6s ease-out;
         }
-
+        
         .feature-card-visible {
             opacity: 1;
             transform: translateY(0) scale(1);
         }
-
+        
         .benefit-item-hidden {
             opacity: 0;
-            transform: translateX(-30px);
+            transform: translateY(30px) scale(0.95);
             transition: all 0.6s ease-out;
         }
-
+        
         .benefit-item-visible {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateY(0) scale(1);
         }
 
         .benefit-item {
@@ -239,7 +266,7 @@
 <body>
     <div class="page-container">
         <!-- Hero Section -->
-        <div class="landing-hero">
+        <div class="landing-hero section-hidden">
             <div class="landing-wrapper">
                 <div class="landing-left animate-slide-left">
                     <img src="/static/landing-logo.png" alt="ArtistDirect" class="landing-logo animate-float">
@@ -269,7 +296,7 @@
         </div>
 
         <!-- Stats Section -->
-        <div class="stats-section animate-fade-in">
+        <div class="stats-section section-hidden">
             <div class="container" style="max-width: 1200px; margin: 0 auto;">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
                     <div class="stat-item">
@@ -291,42 +318,42 @@
                     De ce ArtistDirect?
                 </h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-                    <div class="benefit-item benefit-item-hidden" data-delay="0">
+                    <div class="feature-card feature-card-hidden" data-delay="0">
                         <div class="benefit-icon">💰</div>
                         <div>
                             <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Fără comisioane</h3>
                             <p style="color: var(--color-text-light); margin: 0;">Plata se face direct cu artistul. Nu există intermediari sau comisioane ascunse.</p>
                         </div>
                     </div>
-                    <div class="benefit-item benefit-item-hidden" data-delay="100">
+                    <div class="feature-card feature-card-hidden" data-delay="100">
                         <div class="benefit-icon">🚀</div>
                         <div>
                             <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Rapid și simplu</h3>
                             <p style="color: var(--color-text-light); margin: 0;">Găsește artiști potriviți în câteva minute. Filtrează după județ și gen muzical.</p>
                         </div>
                     </div>
-                    <div class="benefit-item benefit-item-hidden" data-delay="200">
+                    <div class="feature-card feature-card-hidden" data-delay="200">
                         <div class="benefit-icon">💬</div>
                         <div>
                             <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Comunicare directă</h3>
                             <p style="color: var(--color-text-light); margin: 0;">Discută direct cu artistul prin WhatsApp, Facebook sau Instagram.</p>
                         </div>
                     </div>
-                    <div class="benefit-item benefit-item-hidden" data-delay="300">
+                    <div class="feature-card feature-card-hidden" data-delay="300">
                         <div class="benefit-icon">⭐</div>
                         <div>
                             <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Recenzii reale</h3>
                             <p style="color: var(--color-text-light); margin: 0;">Citește recenzii de la clienți reali și vezi rating-urile artiștilor.</p>
                         </div>
                     </div>
-                    <div class="benefit-item benefit-item-hidden" data-delay="400">
+                    <div class="feature-card feature-card-hidden" data-delay="400">
                         <div class="benefit-icon">🎵</div>
                         <div>
                             <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Galerie completă</h3>
                             <p style="color: var(--color-text-light); margin: 0;">Vezi fotografii, videoclipuri și descoperă stilul fiecărui artist.</p>
                         </div>
                     </div>
-                    <div class="benefit-item benefit-item-hidden" data-delay="500">
+                    <div class="feature-card feature-card-hidden" data-delay="500">
                         <div class="benefit-icon">🔒</div>
                         <div>
                             <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Sigur și transparent</h3>
