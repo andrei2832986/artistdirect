@@ -453,6 +453,17 @@ body {
     margin: 0;
 }
 
+/* Footer email link - more subtle color */
+.footer-email-link {
+    color: var(--color-text-light);
+    text-decoration: none;
+}
+
+.footer-email-link:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
 .artist-card-btn {
     width: 100%;
     margin-top: var(--spacing-sm);
