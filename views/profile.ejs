@@ -71,16 +71,31 @@
 
             <div class="container">
                 <!-- Name, Genre, Rating and Description below image -->
-                <div style="text-align: center; margin: 2rem 0 3rem 0;">
+                <div style="text-align: center; margin: 2rem 0 3rem 0;" id="name-section">
                     <h1 style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; margin-bottom: 0.5rem; color: var(--color-black);">
                         <%= profileUser.name %>
                     </h1>
+                    
+                    <!-- Edit Name (Owner Only) -->
+                    <% if (currentUser && currentUser.id === profileUser.id) { %>
+                        <div class="edit-section" style="margin-top: 1.5rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 1rem; font-weight: 600;">Editează Numele</h3>
+                            <form action="/update-name#name-section" method="POST" id="updateNameForm">
+                                <input type="text" name="name" class="form-input" value="<%= profileUser.name || '' %>" placeholder="Numele tău" required maxlength="100" style="text-align: center;">
+                                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" id="updateNameBtn">
+                                    <span class="btn-text">Salvează Numele</span>
+                                    <span class="btn-spinner" style="display: none;">⏳</span>
+                                </button>
+                            </form>
+                        </div>
+                    <% } %>
+                    
                     <% if (profileUser.genres && profileUser.genres.length > 0) { %>
-                        <p style="font-size: clamp(1rem, 2vw, 1.25rem); color: var(--color-gray-600); font-weight: 500; margin-bottom: 0.5rem;">
+                        <p style="font-size: clamp(1rem, 2vw, 1.25rem); color: var(--color-gray-600); font-weight: 500; margin-bottom: 0.5rem; margin-top: 1rem;">
                             <%= profileUser.genres[0] %>
                         </p>
                     <% } else { %>
-                        <p style="font-size: clamp(1rem, 2vw, 1.25rem); color: var(--color-gray-600); font-weight: 500; margin-bottom: 0.5rem;">
+                        <p style="font-size: clamp(1rem, 2vw, 1.25rem); color: var(--color-gray-600); font-weight: 500; margin-bottom: 0.5rem; margin-top: 1rem;">
                             Artist Muzical
                         </p>
                     <% } %>
@@ -751,12 +766,13 @@
         setupFormSpinner('ratingForm', 'submitRatingBtn');
         setupFormSpinner('uploadPhotoForm', 'uploadPhotoBtn');
         setupFormSpinner('uploadProfilePicForm', 'uploadProfilePicBtn');
+        setupFormSpinner('updateNameForm', 'updateNameBtn');
         setupFormSpinner('updateDescriptionForm', 'updateDescriptionBtn');
         setupFormSpinner('updateGenresForm', 'updateGenresBtn');
         setupFormSpinner('updateRegionsForm', 'updateRegionsBtn');
-        setupFormSpinner('updateSocialMediaForm', 'updateSocialMediaBtn');
+        setupFormSpinner('updateSocialForm', 'updateSocialMediaBtn');
         setupFormSpinner('addServiceForm', 'addServiceBtn');
-        setupFormSpinner('addYoutubeVideoForm', 'addYoutubeVideoBtn');
+        setupFormSpinner('addYoutubeForm', 'addYoutubeVideoBtn');
 
         // Image Error Handler
         function handleImageError(img, filename) {

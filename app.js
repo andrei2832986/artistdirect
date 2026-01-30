@@ -1697,6 +1697,38 @@ app.post('/delete-youtube-video', isLoggedIn, (req, res) => {
     });
 });
 
+// Update Name
+app.post('/update-name', isLoggedIn, [
+    body('name')
+        .trim()
+        .isLength({ min: 2, max: 100 })
+        .withMessage('Numele trebuie să aibă între 2 și 100 de caractere')
+        .escape()
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        req.flash('error', errors.array()[0].msg);
+        return res.redirect(`/profiles/${req.user.username}#name-section`);
+    }
+    
+    const name = req.body.name.trim();
+    const userId = req.user.id;
+    
+    const sql = "UPDATE users SET name = $1 WHERE id = $2";
+    
+    db.query(sql, [name, userId], (err, result) => {
+        if (err) {
+            console.error("Error updating name:", err);
+            req.flash('error', 'Eroare la actualizarea numelui.');
+            return res.redirect(`/profiles/${req.user.username}#name-section`);
+        }
+        cache.del(`profile_${req.user.username}`);
+        cache.del(`artist_${userId}`);
+        req.flash('success', 'Numele a fost actualizat cu succes!');
+        res.redirect(`/profiles/${req.user.username}#name-section`);
+    });
+});
+
 // Update Description
 app.post('/update-description', isLoggedIn, (req, res) => {
     const description = req.body.description || null;
