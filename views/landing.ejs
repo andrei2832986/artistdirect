@@ -3,547 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#2C3E50">
     <meta name="description" content="ArtistDirect - Platformă gratuită pentru conectarea directă cu artiști muzicali. Fără comisioane, fără intermediari.">
-    <title>ArtistDirect - Descoperă artiști, fără intermediari</title>
+    <title>ArtistDirect - Page Under Construction</title>
     <link rel="icon" type="image/png" href="/static/favicon.png">
-    <link rel="manifest" href="/static/manifest.webmanifest">
     <link rel="stylesheet" href="/static/style.css">
     <style>
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
 
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .construction-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-cream);
+            padding: 2rem;
+            text-align: center;
         }
 
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.03);
-            }
-        }
-
-
-        .animate-fade-in-up {
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .animate-fade-in {
+        .construction-logo {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 2rem;
             animation: fadeIn 1s ease-out;
         }
 
-        .animate-slide-left {
-            animation: slideInLeft 0.8s ease-out;
-        }
-
-        .animate-slide-right {
-            animation: slideInRight 0.8s ease-out;
-        }
-
-        .animate-float {
-            animation: float 3s ease-in-out infinite;
-        }
-
-
-        .badge-animated {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            background: var(--color-gray-100);
-            color: var(--color-text);
-            border-radius: 50px;
+        .construction-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
             font-weight: 500;
-            font-size: 0.875rem;
-            margin: 0.25rem;
-            border: 1px solid var(--color-gray-border);
-            transition: all 0.3s ease;
-        }
-
-        .badge-animated:hover {
-            background: var(--color-primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--color-gray-border);
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .stats-section {
-            /* Slightly more blue, using existing palette */
-            background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 55%, var(--color-accent) 100%);
-            background-size: 200% 200%;
-            animation: statsGradientShift 14s ease-in-out infinite;
-            color: white;
-            padding: 4rem 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stats-section.section-hidden {
-            opacity: 0;
-            transform: translateY(40px);
-        }
-
-        .stats-section.section-visible {
-            opacity: 1;
-            transform: translateY(0);
-            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-        }
-
-        @keyframes statsGradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        .stat-number {
-            font-size: 3.5rem;
-            font-weight: 700;
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 0.5rem;
-            animation: countUp 1.5s ease-out;
-        }
-
-        .stat-label {
-            font-size: 1.125rem;
-            opacity: 0.9;
-            animation: fadeInUp 1s ease-out 0.3s both;
-        }
-
-        @keyframes countUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .stat-item {
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .stat-item:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .stat-item:nth-child(2) {
-            animation-delay: 0.3s;
-        }
-
-        @keyframes sectionFadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes cardFadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .section-hidden {
-            opacity: 0;
-            transform: translateY(40px);
-        }
-        
-        .section-visible {
-            animation: sectionFadeUp 0.65s ease-out forwards;
-        }
-        
-        .feature-card-hidden {
-            opacity: 0;
-            transform: translateY(30px) scale(0.95);
-        }
-        
-        .feature-card-visible {
-            animation: cardFadeUp 0.6s ease-out forwards;
-        }
-        
-        .benefit-item-hidden {
-            opacity: 0;
-            transform: translateY(30px) scale(0.95);
-            transition: all 0.6s ease-out;
-        }
-        
-        .benefit-item-visible {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        .benefit-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--color-gray-50);
-            border-radius: var(--radius-md);
-            margin-bottom: 1rem;
-        }
-        
-        .benefit-icon {
-            font-size: 2rem;
-            flex-shrink: 0;
-        }
-
-        .cta-section {
-            background: var(--color-cream);
-            padding: 5rem 2rem;
-            text-align: center;
-        }
-
-        .cta-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            margin-bottom: 1.5rem;
             color: var(--color-text);
+            margin-bottom: 1rem;
+            animation: fadeIn 1s ease-out 0.3s both;
         }
 
-        .highlight-text {
-            color: var(--color-primary);
-            font-weight: 600;
+        .construction-message {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--color-text-light);
+            max-width: 600px;
+            line-height: 1.8;
+            animation: fadeIn 1s ease-out 0.6s both;
         }
     </style>
 </head>
 <body>
     <div class="page-container">
-        <!-- Hero Section -->
-        <div class="landing-hero section-hidden">
-            <div class="landing-wrapper">
-                <div class="landing-left animate-slide-left">
-                    <img src="/static/landing-logo.png" alt="ArtistDirect" class="landing-logo animate-float">
-                    <h1 class="landing-title">Descoperă artiști.<br>Fără intermediari.</h1>
-                    <div style="margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">
-                        <span class="badge-animated">100% GRATUIT</span>
-                        <span class="badge-animated">FĂRĂ COMISIOANE</span>
-                        <span class="badge-animated">DIRECT CU ARTISTUL</span>
-                    </div>
-                </div>
-                <div class="landing-right animate-slide-right">
-                    <div class="landing-actions">
-                        <a href="/explore" class="btn hero-btn-primary" style="font-weight: 600; font-size: 1.2rem; padding: 1.3rem 3rem;">
-                            Descoperă artiști
-                        </a>
-                        <a href="/auth/google" class="btn hero-btn-secondary" style="font-weight: 500; font-size: 1rem; padding: 1.1rem 2.5rem;">
-                            Creează cont de artist...
-                        </a>
-                    </div>
-                    <div class="landing-description">
-                        <p>ArtistDirect este platforma unde găsești artiști muzicali și discuți direct cu ei, fără intermediari.</p>
-                        <p>Descoperi rapid cântăreți potriviți pentru evenimentul tău și comunici transparent, de la prima idee până la colaborare.</p>
-                        <p>Simplu, direct și eficient — muzica ajunge la tine fără bariere.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="stats-section section-hidden">
-            <div class="container" style="max-width: 1200px; margin: 0 auto;">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-                    <div class="stat-item">
-                        <div class="stat-number">0%</div>
-                        <div class="stat-label">Comisioane</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">100%</div>
-                        <div class="stat-label">Gratuit</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Benefits Section -->
-        <div class="section section-hidden" style="padding: 5rem 2rem; background: white;" id="benefits-section">
-            <div class="container" style="max-width: 1200px; margin: 0 auto;">
-                <h2 style="font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); text-align: center; margin-bottom: 3rem; color: var(--color-text);">
-                    De ce ArtistDirect?
-                </h2>
-                <div class="landing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-                    <div class="feature-card feature-card-hidden" data-delay="0">
-                        <div class="benefit-icon">💰</div>
-                        <div>
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Fără comisioane</h3>
-                            <p style="color: var(--color-text-light); margin: 0;">Plata se face direct cu artistul. Nu există intermediari sau comisioane ascunse.</p>
-                        </div>
-                    </div>
-                    <div class="feature-card feature-card-hidden" data-delay="100">
-                        <div class="benefit-icon">🚀</div>
-                        <div>
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Rapid și simplu</h3>
-                            <p style="color: var(--color-text-light); margin: 0;">Găsește artiști potriviți în câteva minute. Filtrează după județ și gen muzical.</p>
-                        </div>
-                    </div>
-                    <div class="feature-card feature-card-hidden" data-delay="200">
-                        <div class="benefit-icon">💬</div>
-                        <div>
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Comunicare directă</h3>
-                            <p style="color: var(--color-text-light); margin: 0;">Discută direct cu artistul prin WhatsApp, Facebook sau Instagram.</p>
-                        </div>
-                    </div>
-                    <div class="feature-card feature-card-hidden" data-delay="300">
-                        <div class="benefit-icon">⭐</div>
-                        <div>
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Recenzii reale</h3>
-                            <p style="color: var(--color-text-light); margin: 0;">Citește recenzii de la clienți reali și vezi rating-urile artiștilor.</p>
-                        </div>
-                    </div>
-                    <div class="feature-card feature-card-hidden" data-delay="400">
-                        <div class="benefit-icon">🎵</div>
-                        <div>
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Galerie completă</h3>
-                            <p style="color: var(--color-text-light); margin: 0;">Vezi fotografii, videoclipuri și descoperă stilul fiecărui artist.</p>
-                        </div>
-                    </div>
-                    <div class="feature-card feature-card-hidden" data-delay="500">
-                        <div class="benefit-icon">🔒</div>
-                        <div>
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-text);">Sigur și transparent</h3>
-                            <p style="color: var(--color-text-light); margin: 0;">Platformă sigură unde poți explora și contacta artiști cu încredere.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Features Section -->
-        <div class="section section-hidden" style="padding: 5rem 2rem; background: var(--color-cream);" id="features-section">
-            <div class="container" style="max-width: 1200px; margin: 0 auto;">
-                <h2 style="font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); text-align: center; margin-bottom: 3rem; color: var(--color-text);">
-                    Pentru artiști
-                </h2>
-                <div class="landing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                    <div class="feature-card feature-card-hidden" data-delay="0">
-                        <div class="feature-icon">🎯</div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--color-text);">Profil complet gratuit</h3>
-                        <p style="color: var(--color-text-light); line-height: 1.8;">Creează-ți profilul complet fără costuri. Adaugă fotografii, videoclipuri, servicii și descriere.</p>
-                    </div>
-                    <div class="feature-card feature-card-hidden" data-delay="100">
-                        <div class="feature-icon">👥</div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--color-text);">Găsește clienți</h3>
-                        <p style="color: var(--color-text-light); line-height: 1.8;">Fii descoperit de clienți care caută exact genul tău muzical în zona ta.</p>
-                    </div>
-                    <div class="feature-card feature-card-hidden" data-delay="200">
-                        <div class="feature-icon">💼</div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--color-text);">Fără comisioane</h3>
-                        <p style="color: var(--color-text-light); line-height: 1.8;">Primește toți banii. Nu există comisioane sau taxe ascunse. Totul este gratuit.</p>
-                    </div>
-                    <div class="feature-card feature-card-hidden" data-delay="300">
-                        <div class="feature-icon">⭐</div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--color-text);">Recenzii și rating</h3>
-                        <p style="color: var(--color-text-light); line-height: 1.8;">Colectează recenzii de la clienți și construiește-ți reputația online.</p>
-                    </div>
-                    <div class="feature-card feature-card-hidden" data-delay="400">
-                        <div class="feature-icon">📱</div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--color-text);">Contact direct</h3>
-                        <p style="color: var(--color-text-light); line-height: 1.8;">Clienții te contactează direct prin WhatsApp, Facebook sau Instagram.</p>
-                    </div>
-                    <div class="feature-card feature-card-hidden" data-delay="500">
-                        <div class="feature-icon">🚀</div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--color-text);">Vizibilitate maximă</h3>
-                        <p style="color: var(--color-text-light); line-height: 1.8;">Profilul tău apare în rezultatele de căutare și poate fi găsit ușor.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CTA Section -->
-        <div class="cta-section section-hidden" id="cta-section">
-            <div class="container" style="max-width: 800px; margin: 0 auto;">
-                <h2 class="cta-title">Gata să începi?</h2>
-                <p style="font-size: 1.25rem; color: var(--color-text-light); margin-bottom: 2rem; line-height: 1.8;">
-                    Dacă ești artist muzical, <span class="highlight-text">creează-ți profilul gratuit</span> acum și începe să primești cereri de la clienți.
-                </p>
-                <p style="font-size: 1.125rem; color: var(--color-text-light); margin-bottom: 2.5rem;">
-                    <strong style="color: var(--color-primary);">100% gratuit</strong> • <strong style="color: var(--color-primary);">Fără comisioane</strong> • <strong style="color: var(--color-primary);">Fără obligații</strong>
-                </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="/explore" class="btn hero-btn-primary" style="font-size: 1.2rem; padding: 1.3rem 3rem; font-weight: 600;">
-                        Descoperă artiști
-                    </a>
-                    <a href="/auth/google" class="btn hero-btn-secondary" style="font-size: 1.1rem; padding: 1.3rem 2.5rem;">
-                        Creează cont de artist gratuit
-                    </a>
-                </div>
-            </div>
+        <div class="construction-container">
+            <img src="/static/landing-logo.png" alt="ArtistDirect" class="construction-logo">
+            <h1 class="construction-title">ArtistDirect</h1>
+            <p class="construction-message">Pagina este în construcție.<br>Revenim în curând!</p>
         </div>
     </div>
     
     <%- include('footer') %>
-
-    <script>
-        // Custom PWA install prompt after 10 seconds
-        let deferredPrompt = null;
-        let installPromptShown = false;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing
-            e.preventDefault();
-            deferredPrompt = e;
-
-            // Show our own prompt after 10 seconds on the landing page
-            if (!installPromptShown) {
-                installPromptShown = true;
-                setTimeout(async () => {
-                    if (!deferredPrompt) return;
-                    try {
-                        const { outcome } = await deferredPrompt.prompt();
-                        // outcome is 'accepted' or 'dismissed'
-                        deferredPrompt = null;
-                    } catch (err) {
-                        console.error('Install prompt failed:', err);
-                        deferredPrompt = null;
-                    }
-                }, 10000);
-            }
-        });
-
-        // Register service worker for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => {
-                    console.error('Service worker registration failed:', err);
-                });
-            });
-        }
-
-        // Intersection Observer for scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        // Observer for sections
-        const sectionObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.remove('section-hidden');
-                    entry.target.classList.add('section-visible');
-                }
-            });
-        }, observerOptions);
-
-        // Observer for benefit items
-        const benefitObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const delay = parseInt(entry.target.getAttribute('data-delay')) || 0;
-                    setTimeout(() => {
-                        entry.target.classList.remove('benefit-item-hidden');
-                        entry.target.classList.add('benefit-item-visible');
-                    }, delay);
-                    benefitObserver.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        // Observer for feature cards
-        const featureObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const delay = parseInt(entry.target.getAttribute('data-delay')) || 0;
-                    setTimeout(() => {
-                        entry.target.classList.remove('feature-card-hidden');
-                        entry.target.classList.add('feature-card-visible');
-                    }, delay);
-                    featureObserver.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        // Observe sections
-        document.querySelectorAll('.section-hidden').forEach(section => {
-            sectionObserver.observe(section);
-        });
-
-        // Observe benefit items
-        document.querySelectorAll('.benefit-item-hidden').forEach(item => {
-            benefitObserver.observe(item);
-        });
-
-        // Observe feature cards
-        document.querySelectorAll('.feature-card-hidden').forEach(card => {
-            featureObserver.observe(card);
-        });
-    </script>
 </body>
 </html>
